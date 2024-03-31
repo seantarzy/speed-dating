@@ -47,10 +47,10 @@ type centuryData = {
   min?: number;
 };
 const CENTURY_MAP = {
-  17: { valueKey: 4, weight: 5, min: 1753 },
-  18: { valueKey: 2, weight: 7 },
-  19: { valueKey: 0, weight: 50 },
-  20: { valueKey: 6, weight: 7 },
+  17: { valueKey: 4, weight: 10, min: 1753 },
+  18: { valueKey: 2, weight: 12 },
+  19: { valueKey: 0, weight: 75 },
+  20: { valueKey: 6, weight: 10 },
   21: { valueKey: 4, weight: 2 },
   22: { valueKey: 2, weight: 2 },
   23: { valueKey: 0, weight: 4 },
