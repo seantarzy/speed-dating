@@ -41,10 +41,15 @@ type DayNames = (typeof DAY_MAP)[keyof typeof DAY_MAP];
 // Extracting the values from DAY_MAP to create an array of strings
 const DAYS_STRINGS: DayNames[] = Object.values(DAY_MAP);
 
+type centuryData = {
+  valueKey: number;
+  weight: number;
+  min?: number;
+};
 const CENTURY_MAP = {
-  17: { valueKey: 4, weight: 5 },
+  17: { valueKey: 4, weight: 5, min: 1753 },
   18: { valueKey: 2, weight: 7 },
-  19: { valueKey: 0, weight: 10 },
+  19: { valueKey: 0, weight: 50 },
   20: { valueKey: 6, weight: 7 },
   21: { valueKey: 4, weight: 2 },
   22: { valueKey: 2, weight: 2 },
@@ -52,13 +57,16 @@ const CENTURY_MAP = {
   24: { valueKey: 6, weight: 1 },
 };
 
+const CENTURY_MAP_FREQ_BY_WEIGHT = Object.entries(CENTURY_MAP).reduce(
+  (acc, [century, { weight }]) => {
+    return [...acc, ...Array(weight).fill(parseInt(century))];
+  },
+  [] as number[]
+);
+
 type centuryKey = keyof typeof CENTURY_MAP;
 
 type monthKey = keyof typeof MONTH_MAP;
-
-const LOWER_CENTRURY_BOUND = 1750;
-
-const HIGH_CENTURY_BOUND = 2499;
 
 const GAME_DURATION = 100;
 
@@ -67,6 +75,20 @@ const FEEDBACK_DURATION = 2;
 const isLeapYear = (year: number) => {
   return year % 4 === 0;
 };
+
+function ReferenceLink() {
+  return (
+    <div className="text-center text-md font-semibold text-gray-800">
+      <a
+        href="https://www.almanac.com/how-find-day-week"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Reference: How to Find the Day of the Week
+      </a>
+    </div>
+  );
+}
 
 function App() {
   const [monthKey, setMonthKey] = useState<monthKey | null>(null);
@@ -140,11 +162,19 @@ function App() {
     return Math.floor(Math.random() * daysLimit) + 1;
   }
 
+  function getLastTwoDigitsOfYear(century: centuryKey) {
+    // 1753 is the first year of the Gregorian calendar
+    const centuryData: centuryData = CENTURY_MAP[century];
+    const lowerBound = centuryData.min || 0;
+    return Math.floor(Math.random() * (100 - lowerBound)) + lowerBound;
+  }
+
   function generateYear() {
-    return Math.floor(
-      Math.random() * (HIGH_CENTURY_BOUND - LOWER_CENTRURY_BOUND + 1) +
-        LOWER_CENTRURY_BOUND
-    );
+    const randomIshCentury = CENTURY_MAP_FREQ_BY_WEIGHT[
+      Math.floor(Math.random() * CENTURY_MAP_FREQ_BY_WEIGHT.length)
+    ] as centuryKey;
+    const randomYear = getLastTwoDigitsOfYear(randomIshCentury);
+    return randomIshCentury * 100 + randomYear;
   }
 
   function resetState() {
@@ -234,7 +264,7 @@ function App() {
                 </>
               )}
             </div>
-            <div className="w-2/3">
+            <div className="w-2/3 min-h-96">
               <div className="div flex flex-row items-center justify-center flex-wrap">
                 {isDateGenerated ? (
                   DAYS_STRINGS.map((dayString, index) => {
@@ -280,7 +310,6 @@ function App() {
                 </div>
               )}
             </div>
-            <div></div>
           </div>
         </>
       ) : (
@@ -311,6 +340,8 @@ function App() {
           </button>
         </div>
       )}
+      <br />
+      <ReferenceLink />
     </div>
   );
 }
