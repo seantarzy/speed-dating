@@ -66,12 +66,7 @@ function App() {
     day: number,
     yearAddend: number
   ) {
-    if (
-      monthKey === null ||
-      centuryKey === null ||
-      day === 0 ||
-      yearAddend === 0
-    ) {
+    if (monthKey === null || centuryKey === null || day === 0) {
       return;
     }
 
@@ -173,7 +168,9 @@ function App() {
       generatedMonthKey = generateMonthKey();
       setMonthKey(generatedMonthKey as MonthKey);
 
-      generatedDay = generateDay(MONTH_MAP[generatedMonthKey]["days"]);
+      const monthData = MONTH_MAP[generatedMonthKey];
+
+      generatedDay = generateDay(monthData["days"]);
       setDay(generatedDay);
 
       generatedYear = generateYear();
