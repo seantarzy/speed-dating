@@ -1,72 +1,21 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import useLocalStorage from "./components/useLocalStorage";
+import useGameTimer from "./components/useGameTimer";
+import {
+  CENTURY_MAP,
+  CENTURY_MAP_FREQ_BY_WEIGHT,
+  CenturyKey,
+  DAYS_STRINGS,
+  DayKey,
+  MONTH_MAP,
+  MonthKey,
+  isValidCenturyKey,
+} from "./data/date_maps";
+import { SpecialDate, famousDates } from "./data/famous_dates";
+import { CenturyData } from "./data/types";
 
 // referencing https://www.almanac.com/how-find-day-week
-
-interface Month {
-  name: string;
-  keyConstant: number;
-  leapYearKeyConstant: number;
-  days: number;
-}
-const MONTH_MAP: Record<number, Month> = {
-  1: { name: "January", keyConstant: 1, leapYearKeyConstant: 0, days: 31 },
-  2: { name: "February", keyConstant: 4, leapYearKeyConstant: 3, days: 28 },
-  3: { name: "March", keyConstant: 4, leapYearKeyConstant: 4, days: 31 },
-  4: { name: "April", keyConstant: 0, leapYearKeyConstant: 0, days: 30 },
-  5: { name: "May", keyConstant: 2, leapYearKeyConstant: 2, days: 31 },
-  6: { name: "June", keyConstant: 5, leapYearKeyConstant: 5, days: 30 },
-  7: { name: "July", keyConstant: 0, leapYearKeyConstant: 0, days: 31 },
-  8: { name: "August", keyConstant: 3, leapYearKeyConstant: 3, days: 31 },
-  9: { name: "September", keyConstant: 6, leapYearKeyConstant: 6, days: 30 },
-  10: { name: "October", keyConstant: 1, leapYearKeyConstant: 1, days: 31 },
-  11: { name: "November", keyConstant: 4, leapYearKeyConstant: 4, days: 30 },
-  12: { name: "December", keyConstant: 6, leapYearKeyConstant: 6, days: 31 },
-};
-
-const DAY_MAP = {
-  0: "Saturday",
-  1: "Sunday",
-  2: "Monday",
-  3: "Tuesday",
-  4: "Wednesday",
-  5: "Thursday",
-  6: "Friday",
-};
-
-// Correctly obtaining the type of the values in DAY_MAP
-type DayNames = (typeof DAY_MAP)[keyof typeof DAY_MAP];
-
-// Extracting the values from DAY_MAP to create an array of strings
-const DAYS_STRINGS: DayNames[] = Object.values(DAY_MAP);
-
-type centuryData = {
-  valueKey: number;
-  weight: number;
-  min?: number;
-};
-const CENTURY_MAP = {
-  17: { valueKey: 4, weight: 10, min: 1753 },
-  18: { valueKey: 2, weight: 12 },
-  19: { valueKey: 0, weight: 75 },
-  20: { valueKey: 6, weight: 10 },
-  21: { valueKey: 4, weight: 2 },
-  22: { valueKey: 2, weight: 2 },
-  23: { valueKey: 0, weight: 4 },
-  24: { valueKey: 6, weight: 1 },
-};
-
-const CENTURY_MAP_FREQ_BY_WEIGHT = Object.entries(CENTURY_MAP).reduce(
-  (acc, [century, { weight }]) => {
-    return [...acc, ...Array(weight).fill(parseInt(century))];
-  },
-  [] as number[]
-);
-
-type centuryKey = keyof typeof CENTURY_MAP;
-
-type monthKey = keyof typeof MONTH_MAP;
 
 const GAME_DURATION = 100;
 
@@ -89,25 +38,31 @@ function ReferenceLink() {
     </div>
   );
 }
+//
 
+// January
+// 18
+// 1927
 function App() {
-  const [monthKey, setMonthKey] = useState<monthKey | null>(null);
+  const [monthKey, setMonthKey] = useState<MonthKey | null>(null);
+  const [specialDateGame, setSpecialDateGame] = useState(true);
   const [day, setDay] = useState(0);
   const [year, setYear] = useState(0);
   const [correctDayOfWeekIdx, setCorrectDayOfWeekIdx] = useState<number | null>(
     null
   );
+  const [famousDateDescription, setFamousDateDescription] =
+    useState<string>("");
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [userSelectedIdx, setUserSelecedIdx] = useState<number | null>(null);
-  const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useLocalStorage("highScore", "0");
   const [gameStarted, setGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const isDateGenerated = monthKey !== null && day !== 0 && year !== 0;
   function calculateDayOfWeek(
-    monthKey: monthKey,
-    centuryKey: centuryKey,
+    monthKey: MonthKey,
+    centuryKey: CenturyKey,
     day: number,
     yearAddend: number
   ) {
@@ -134,25 +89,19 @@ function App() {
     setCorrectDayOfWeekIdx(dayOfWeekIdx);
   }
 
-  function decrementTimeLeft() {
-    setTimeLeft((prevTimeLeft) => prevTimeLeft - 1);
-  }
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      setIsGameOver(true);
-      resetState();
-      setGameStarted(false);
-      if (score > parseInt(highScore)) {
-        setHighScore(score.toString());
-      }
-      setTimeLeft(GAME_DURATION);
+  const onTimeUp = () => {
+    setIsGameOver(true);
+    resetState();
+    setGameStarted(false);
+    if (score > parseInt(highScore)) {
+      setHighScore(score.toString());
     }
-  }, [timeLeft, score]);
+  };
 
-  useEffect(() => {
-    const timer = setInterval(decrementTimeLeft, 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const { timeLeft, startTimer, resetTimer } = useGameTimer(
+    GAME_DURATION,
+    onTimeUp
+  );
 
   function generateMonthKey() {
     return Math.floor(Math.random() * 12) + 1;
@@ -162,17 +111,24 @@ function App() {
     return Math.floor(Math.random() * daysLimit) + 1;
   }
 
-  function getLastTwoDigitsOfYear(century: centuryKey) {
-    // 1753 is the first year of the Gregorian calendar
-    const centuryData: centuryData = CENTURY_MAP[century];
-    const lowerBound = centuryData.min || 0;
-    return Math.floor(Math.random() * (100 - lowerBound)) + lowerBound;
-  }
+  function getLastTwoDigitsOfYear(century: CenturyKey) {
+    const centuryData: CenturyData = CENTURY_MAP[century];
+    const minYearLastTwoDigits = centuryData.min ? centuryData.min % 100 : 0; // Calculate the last two digits of the min year if specified
+    const yearRange = 100 - minYearLastTwoDigits; // Adjust the range for generating the last two digits
 
+    // Generate a random number within the adjusted range and add it to the minYearLastTwoDigits
+    const yearWithinCentury =
+      Math.floor(Math.random() * yearRange) + minYearLastTwoDigits;
+    return yearWithinCentury;
+  }
   function generateYear() {
-    const randomIshCentury = CENTURY_MAP_FREQ_BY_WEIGHT[
-      Math.floor(Math.random() * CENTURY_MAP_FREQ_BY_WEIGHT.length)
-    ] as centuryKey;
+    const randomIshCentury =
+      CENTURY_MAP_FREQ_BY_WEIGHT[
+        Math.floor(Math.random() * CENTURY_MAP_FREQ_BY_WEIGHT.length)
+      ];
+    if (!isValidCenturyKey(randomIshCentury)) {
+      throw new Error(`Invalid century key: ${randomIshCentury}`);
+    }
     const randomYear = getLastTwoDigitsOfYear(randomIshCentury);
     return randomIshCentury * 100 + randomYear;
   }
@@ -196,23 +152,42 @@ function App() {
   }, [userSelectedIdx]);
 
   function generateRandomDate() {
-    const randomMonthKey = generateMonthKey();
-    setMonthKey(randomMonthKey as monthKey);
+    let generatedMonthKey: MonthKey;
+    let generatedDay: DayKey;
+    let generatedYear: number;
+    if (specialDateGame) {
+      const specialDate: SpecialDate =
+        famousDates[Math.floor(Math.random() * famousDates.length)];
+      const { month, day, year, description } = specialDate;
 
-    const randomDay = generateDay(MONTH_MAP[randomMonthKey]["days"]);
-    setDay(randomDay);
+      generatedMonthKey = month;
+      setMonthKey(generatedMonthKey as MonthKey);
 
-    const randomYear = generateYear();
-    setYear(randomYear);
+      generatedDay = day;
+      setDay(generatedDay);
+      generatedYear = year;
+      setYear(generatedYear);
 
-    const randomCenturKey = Math.floor(randomYear / 100) as centuryKey;
+      setFamousDateDescription(description);
+    } else {
+      generatedMonthKey = generateMonthKey();
+      setMonthKey(generatedMonthKey as MonthKey);
+
+      generatedDay = generateDay(MONTH_MAP[generatedMonthKey]["days"]);
+      setDay(generatedDay);
+
+      generatedYear = generateYear();
+      setYear(generatedYear);
+    }
+
+    const randomCenturKey = Math.floor(generatedYear / 100) as CenturyKey;
     // the year addend for 1856 would be '56'
-    const yearAddend = parseInt(randomYear.toString(10).slice(2));
+    const yearAddend = parseInt(generatedYear.toString(10).slice(2));
 
     calculateDayOfWeek(
-      randomMonthKey as monthKey,
+      generatedMonthKey as MonthKey,
       randomCenturKey,
-      randomDay,
+      generatedDay,
       yearAddend
     );
   }
@@ -236,7 +211,16 @@ function App() {
 
   const startGame = () => {
     setGameStarted(true);
+    setIsGameOver(false);
+    setScore(0);
+    resetTimer();
+    startTimer();
     generateRandomDate();
+  };
+
+  const handleGameStart = (specialDate: boolean) => {
+    setSpecialDateGame(specialDate);
+    startGame();
   };
 
   return (
@@ -255,14 +239,23 @@ function App() {
           </div>
           <br />
           <div className="flex flex-col gap-6 items-center">
-            <div className="flex flex-row gap-1 items-center justify-center">
-              {!!monthKey && (
-                <>
-                  <div>Current Date:</div>
-                  <div>{MONTH_MAP[monthKey]["name"]}</div>
-                  <div>{day}</div>,<div>{year}</div>
-                </>
-              )}
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row gap-1 items-center justify-center">
+                {!!monthKey && (
+                  <>
+                    <div>Current Date:</div>
+                    <div>{MONTH_MAP[monthKey]["name"]}</div>
+                    <div>{day}</div>,<div>{year}</div>
+                  </>
+                )}
+              </div>
+              <div>
+                {specialDateGame && (
+                  <div className="text-center text-sm font-semibold text-gray-800">
+                    {famousDateDescription}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="w-2/3 min-h-96">
               <div className="div flex flex-row items-center justify-center flex-wrap">
@@ -276,6 +269,7 @@ function App() {
                         <button
                           key={index}
                           onClick={() => handleDaySelect(index)}
+                          disabled={userSelectedIdx !== null}
                           className={`px-1 py-[0.5px] md:px-4 md:py-2 font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-opacity-75 ${
                             correctDayOfWeekIdx === index && isCorrect !== null
                               ? "bg-green-500 text-white focus:ring-green-500" // Always highlight the correct day in green
@@ -332,12 +326,21 @@ function App() {
             </div>
           </div>
           <br />
-          <button
-            onClick={startGame}
-            className="px-4 py-2 font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-opacity-75 bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-600"
-          >
-            {isGameOver ? "Play Again" : "Start Game"}
-          </button>
+          <div className="flex flex-col gap-1 justify-center items-center">
+            <button
+              onClick={() => handleGameStart(false)}
+              className="px-4 py-2 font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-opacity-75 bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-600"
+            >
+              {isGameOver ? "Play Again (regular)" : "Start Game (regular)"}
+            </button>
+            <br />
+            <button
+              onClick={() => handleGameStart(true)}
+              className="px-4 py-2 font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-opacity-75 bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-600"
+            >
+              {isGameOver ? "Play Again (special)" : "Start Game (special)"}
+            </button>
+          </div>
         </div>
       )}
       <br />
