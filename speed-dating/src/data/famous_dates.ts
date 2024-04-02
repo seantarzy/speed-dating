@@ -150,4 +150,123 @@ export const famousDates: SpecialDate[] = [
     description:
       "The Beatles' rooftop concert. The last public performance of the Beatles, held on the roof of Apple Records in London.",
   },
+  {
+    month: 10,
+    day: 14,
+    year: 1066,
+    description:
+      "Battle of Hastings. William the Conqueror's Norman forces defeat King Harold II of England, a pivotal moment in English history.",
+  },
+  {
+    month: 7,
+    day: 20,
+    year: 1969,
+    description:
+      "First human moonwalk. Neil Armstrong and Buzz Aldrin become the first and second humans, respectively, to walk on the Moon.",
+  },
+  {
+    month: 11,
+    day: 11,
+    year: 1918,
+    description:
+      "Armistice Day. Marking the end of World War I, hostilities ceased on the 11th hour of the 11th day of the 11th month.",
+  },
+  {
+    month: 10,
+    day: 1,
+    year: 1971,
+    description:
+      "Opening of Walt Disney World. The grand opening of the Walt Disney World Resort in Orlando, Florida.",
+  },
+  {
+    month: 5,
+    day: 29,
+    year: 1953,
+    description:
+      "First successful ascent of Mount Everest. Edmund Hillary and Tenzing Norgay reach the summit of the world's highest mountain.",
+  },
+  {
+    month: 12,
+    day: 5,
+    year: 1933,
+    description:
+      "End of Prohibition in the United States. The 21st Amendment is ratified, repealing the 18th Amendment and ending the nationwide prohibition on alcohol.",
+  },
+  {
+    month: 8,
+    day: 15,
+    year: 1947,
+    description:
+      "Indian Independence. India gains independence from British rule after a long non-violent resistance campaign led by Mahatma Gandhi.",
+  },
+  {
+    month: 4,
+    day: 15,
+    year: 1912,
+    description:
+      "Sinking of the Titanic. The RMS Titanic sinks after hitting an iceberg, one of the deadliest peacetime maritime disasters in history.",
+  },
+  {
+    month: 3,
+    day: 15,
+    year: 44,
+    description:
+      "The Ides of March. Julius Caesar is assassinated by members of the Roman Senate, leading to the eventual rise of the Roman Empire.",
+  },
+  {
+    month: 8,
+    day: 28,
+    year: 1963,
+    description:
+      "Martin Luther King Jr.'s 'I Have a Dream' speech. Delivered during the March on Washington for Jobs and Freedom, it became a symbol of the Civil Rights Movement.",
+  },
+  {
+    month: 4,
+    day: 26,
+    year: 1986,
+    description:
+      "Chernobyl disaster. A catastrophic nuclear accident occurs at the Chernobyl Nuclear Power Plant in the Soviet Union.",
+  },
+  {
+    month: 11,
+    day: 22,
+    year: 1963,
+    description:
+      "Assassination of John F. Kennedy. The 35th President of the United States is assassinated in Dallas, Texas.",
+  },
+  {
+    month: 1,
+    day: 24,
+    year: 1848,
+    description:
+      "California Gold Rush begins. James W. Marshall discovers gold at Sutter's Mill, triggering a massive westward migration in search of wealth.",
+  },
+  {
+    month: 6,
+    day: 18,
+    year: 1815,
+    description:
+      "Battle of Waterloo. Napoleon Bonaparte's defeat at Waterloo marks the end of his rule as Emperor of the French.",
+  },
+  {
+    month: 2,
+    day: 11,
+    year: 1990,
+    description:
+      "Nelson Mandela released from prison. After 27 years in prison, Mandela is freed, marking a crucial step towards the end of apartheid in South Africa.",
+  },
+  {
+    month: 10,
+    day: 5,
+    year: 2011,
+    description:
+      "Steve Jobs passes away. The co-founder of Apple Inc., who led the company to develop revolutionary technology products, dies.",
+  },
+  {
+    month: 4,
+    day: 18,
+    year: 1906,
+    description:
+      "San Francisco earthquake. A major earthquake and resulting fires devastate San Francisco, causing widespread destruction.",
+  },
 ];
