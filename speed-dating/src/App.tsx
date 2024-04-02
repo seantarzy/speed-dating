@@ -13,13 +13,15 @@ import {
   isValidCenturyKey,
 } from "./data/date_maps";
 import { SpecialDate, famousDates } from "./data/famous_dates";
-import { CenturyData } from "./data/types";
+import { CenturyData, Month } from "./data/types";
+import { FadeInText } from "./components/FadeInText";
 
 // referencing https://www.almanac.com/how-find-day-week
 
 const GAME_DURATION = 100;
 
 const FEEDBACK_DURATION = 2;
+const FADE_IN_DURATION = 1.5;
 
 function ReferenceLink() {
   return (
@@ -35,7 +37,9 @@ function ReferenceLink() {
   );
 }
 
-const DESC_TRUNCATE_LENGTH = 130;
+const isMobile = window.innerWidth < 768;
+
+const DESC_TRUNCATE_LENGTH = isMobile ? 100 : 250;
 
 function App() {
   const [monthKey, setMonthKey] = useState<MonthKey | null>(null);
@@ -53,21 +57,24 @@ function App() {
   const [highScore, setHighScore] = useLocalStorage("highScore", "0");
   const [gameStarted, setGameStarted] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [readableDate, setReadableDate] = useState<string>("");
   const isDateGenerated = monthKey !== null && day !== 0 && year !== 0;
+
   function calculateDayOfWeek(
     monthKey: MonthKey,
     centuryKey: CenturyKey,
     day: number,
-    yearAddend: number
+    yearAddend: string
   ) {
     if (monthKey === null || centuryKey === null || day === 0) {
       return;
     }
-    const dateString = `${monthKey}/${day}, ${centuryKey}${yearAddend}`;
 
-    console.log(dateString);
+    const monthData: Month = MONTH_MAP[monthKey];
+    const monthName = monthData["name"];
+    const dateString = `${monthName} ${day}, ${centuryKey}${yearAddend}`;
+    setReadableDate(dateString);
     const date = new Date(dateString);
-    console.log(date);
     const dayOfWeekIdx = (date.getDay() + 1) % 7;
 
     setCorrectDayOfWeekIdx(dayOfWeekIdx);
@@ -127,12 +134,26 @@ function App() {
   }
 
   useEffect(() => {
+    let stateResetId: number;
+    let fadeInDateId: number;
     if (userSelectedIdx !== null) {
-      setTimeout(() => {
+      stateResetId = setTimeout(() => {
         resetState();
         generateRandomDate();
       }, FEEDBACK_DURATION * 1000);
+
+      fadeInDateId = setTimeout(() => {
+        setReadableDate("");
+        if (specialDateGame) {
+          setFamousDateDescription("");
+        }
+      }, FADE_IN_DURATION * 1000);
     }
+
+    return () => {
+      clearTimeout(stateResetId);
+      clearTimeout(fadeInDateId);
+    };
   }, [userSelectedIdx]);
 
   function generateRandomDate() {
@@ -168,8 +189,8 @@ function App() {
 
     const randomCenturKey = Math.floor(generatedYear / 100) as CenturyKey;
     // the year addend for 1856 would be '56'
-    const yearAddend = parseInt(generatedYear.toString(10).slice(2));
 
+    const yearAddend = generatedYear.toString(10).slice(2);
     calculateDayOfWeek(
       generatedMonthKey as MonthKey,
       randomCenturKey,
@@ -191,7 +212,6 @@ function App() {
     } else {
       setIsCorrect(false);
       setScore((prevScore) => prevScore - 1);
-      console.log("Incorrect");
     }
   };
 
@@ -224,26 +244,26 @@ function App() {
             Score: <span>{score}</span>
           </div>
           <br />
-          <div className="flex flex-col gap-6 items-center max-h-72 md:max-h-none mb-16">
+          <div className="flex flex-col gap-6 items-center max-h-72 md:max-h-none mb-24 md:mb-16">
             <div className="flex flex-col gap-2">
               <div className="flex flex-row gap-1 items-center justify-center">
-                {!!monthKey && (
-                  <>
-                    <div>Current Date:</div>
-                    <div>{MONTH_MAP[monthKey]["name"]}</div>
-                    <div>{day}</div>,<div>{year}</div>
-                  </>
-                )}
+                <div className="h-4">
+                  {!!readableDate && <FadeInText>{readableDate}</FadeInText>}
+                </div>
               </div>
               <div>
                 {specialDateGame && (
-                  <div className="text-center text-sm font-semibold text-gray-800 h-16">
-                    {famousDateDescription.length > DESC_TRUNCATE_LENGTH
-                      ? `${famousDateDescription.substring(
-                          0,
-                          DESC_TRUNCATE_LENGTH
-                        )}...`
-                      : famousDateDescription}
+                  <div className="text-center text-sm font-semibold text-gray-800 h-20 flex items-center">
+                    {famousDateDescription && (
+                      <FadeInText>
+                        {famousDateDescription.length > DESC_TRUNCATE_LENGTH
+                          ? `${famousDateDescription.substring(
+                              0,
+                              DESC_TRUNCATE_LENGTH
+                            )}...`
+                          : famousDateDescription}
+                      </FadeInText>
+                    )}
                   </div>
                 )}
               </div>
