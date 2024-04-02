@@ -34,11 +34,9 @@ function ReferenceLink() {
     </div>
   );
 }
-//
 
-// January
-// 18
-// 1927
+const DESC_TRUNCATE_LENGTH = 130;
+
 function App() {
   const [monthKey, setMonthKey] = useState<MonthKey | null>(null);
   const [specialDateGame, setSpecialDateGame] = useState(true);
@@ -240,8 +238,11 @@ function App() {
               <div>
                 {specialDateGame && (
                   <div className="text-center text-sm font-semibold text-gray-800 h-16">
-                    {famousDateDescription.length > 150
-                      ? `${famousDateDescription.substring(0, 150)}...`
+                    {famousDateDescription.length > DESC_TRUNCATE_LENGTH
+                      ? `${famousDateDescription.substring(
+                          0,
+                          DESC_TRUNCATE_LENGTH
+                        )}...`
                       : famousDateDescription}
                   </div>
                 )}
