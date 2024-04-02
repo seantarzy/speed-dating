@@ -69,18 +69,13 @@ function App() {
     if (monthKey === null || centuryKey === null || day === 0) {
       return;
     }
+    const dateString = `${monthKey}/${day}, ${centuryKey}${yearAddend}`;
 
-    const monthKeyConstant = isLeapYear(year)
-      ? MONTH_MAP[monthKey]["leapYearKeyConstant"]
-      : MONTH_MAP[monthKey]["keyConstant"];
+    console.log(dateString);
+    const date = new Date(dateString);
+    console.log(date);
+    const dayOfWeekIdx = (date.getDay() + 1) % 7;
 
-    const dayOfWeekIdx =
-      (CENTURY_MAP[centuryKey]["valueKey"] +
-        yearAddend +
-        Math.floor(yearAddend / 4) +
-        monthKeyConstant +
-        day) %
-      7;
     setCorrectDayOfWeekIdx(dayOfWeekIdx);
   }
 
