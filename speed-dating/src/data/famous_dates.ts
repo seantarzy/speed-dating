@@ -8,6 +8,7 @@ export type SpecialDate = {
   day: number;
   year: number;
   description: string;
+  img?: string;
 };
 export const famousDates: SpecialDate[] = [
   {
@@ -16,6 +17,7 @@ export const famousDates: SpecialDate[] = [
     year: 1955,
     description:
       "Back to the Future Day. Marty McFly travels to the future in the movie Back to the Future II.",
+    img: "https://upload.wikimedia.org/wikipedia/en/d/d2/Back_to_the_Future_Part_II.jpg",
   },
   {
     month: 7,
@@ -23,6 +25,7 @@ export const famousDates: SpecialDate[] = [
     year: 1789,
     description:
       "Bastille Day. The French Revolution begins with the storming of the Bastille.",
+    img: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Prise_de_la_Bastille.jpg",
   },
   {
     month: 4,
@@ -30,6 +33,7 @@ export const famousDates: SpecialDate[] = [
     year: 1961,
     description:
       "First human space flight. Yuri Gagarin, a Soviet astronaut, becomes the first human to journey into outer space.",
+    img: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Yuri_Gagarin_%281961%29.jpg",
   },
   {
     month: 10,
@@ -37,6 +41,7 @@ export const famousDates: SpecialDate[] = [
     year: 1929,
     description:
       "Black Tuesday. The most devastating stock market crash in the history of the United States, marking the start of the Great Depression.",
+    img: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Black_Tuesday.jpg",
   },
   {
     month: 12,
@@ -44,6 +49,7 @@ export const famousDates: SpecialDate[] = [
     year: 1991,
     description:
       "The dissolution of the Soviet Union. Marking the end of the Cold War, the USSR is formally dissolved into 15 sovereign republics.",
+    img: "https://upload.wikimedia.org/wikipedia/commons/5/5a/Flag_of_the_Soviet_Union.svg",
   },
   {
     month: 6,
@@ -51,6 +57,7 @@ export const famousDates: SpecialDate[] = [
     year: 1914,
     description:
       "Assassination of Archduke Franz Ferdinand. This event triggered a series of events that led to the start of World War I.",
+    img: "https://upload.wikimedia.org/wikipedia/commons/1/1d/Archduke_Franz_Ferdinand_of_Austria.jpg",
   },
   {
     month: 12,
@@ -209,7 +216,7 @@ export const famousDates: SpecialDate[] = [
   {
     month: 3,
     day: 15,
-    year: 44,
+    year: 1944,
     description:
       "The Ides of March. Julius Caesar is assassinated by members of the Roman Senate, leading to the eventual rise of the Roman Empire.",
   },
@@ -254,6 +261,7 @@ export const famousDates: SpecialDate[] = [
     year: 1990,
     description:
       "Nelson Mandela released from prison. After 27 years in prison, Mandela is freed, marking a crucial step towards the end of apartheid in South Africa.",
+    img: "https://upload.wikimedia.org/wikipedia/commons/1/1f/Nelson_Mandela-2008_%28edit%29.jpg",
   },
   {
     month: 10,
