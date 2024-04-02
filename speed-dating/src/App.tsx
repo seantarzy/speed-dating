@@ -247,7 +247,7 @@ function App() {
                 )}
               </div>
             </div>
-            <div className="w-2/3">
+            <div className="md:w-2/3">
               <div className="div flex flex-row items-center justify-center flex-wrap">
                 {isDateGenerated ? (
                   DAYS_STRINGS.map((dayString, index) => {
