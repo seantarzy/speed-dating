@@ -21,10 +21,6 @@ const GAME_DURATION = 100;
 
 const FEEDBACK_DURATION = 2;
 
-const isLeapYear = (year: number) => {
-  return year % 4 === 0;
-};
-
 function ReferenceLink() {
   return (
     <div className="text-center text-md font-semibold text-gray-800">
@@ -216,8 +212,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 flex flex-col justify-center items-center p-8 rounded-md">
-      <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-8">
+    <div className="min-h-screen bg-blue-50 flex flex-col items-center p-8 rounded-md">
+      <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 mb-8 md:mt-24 flex flex-col justify-center items-center">
         Select the Day of the Week for any given date
       </h1>
 
@@ -230,7 +226,7 @@ function App() {
             Score: <span>{score}</span>
           </div>
           <br />
-          <div className="flex flex-col gap-6 items-center">
+          <div className="flex flex-col gap-6 items-center max-h-72 md:max-h-none mb-16">
             <div className="flex flex-col gap-2">
               <div className="flex flex-row gap-1 items-center justify-center">
                 {!!monthKey && (
@@ -243,13 +239,15 @@ function App() {
               </div>
               <div>
                 {specialDateGame && (
-                  <div className="text-center text-sm font-semibold text-gray-800">
-                    {famousDateDescription}
+                  <div className="text-center text-sm font-semibold text-gray-800 h-16">
+                    {famousDateDescription.length > 150
+                      ? `${famousDateDescription.substring(0, 150)}...`
+                      : famousDateDescription}
                   </div>
                 )}
               </div>
             </div>
-            <div className="w-2/3 min-h-96">
+            <div className="w-2/3">
               <div className="div flex flex-row items-center justify-center flex-wrap">
                 {isDateGenerated ? (
                   DAYS_STRINGS.map((dayString, index) => {
@@ -262,7 +260,7 @@ function App() {
                           key={index}
                           onClick={() => handleDaySelect(index)}
                           disabled={userSelectedIdx !== null}
-                          className={`px-1 py-[0.5px] md:px-4 md:py-2 font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-opacity-75 ${
+                          className={`px-2 py-1 md:px-4 md:py-2 font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-opacity-75 ${
                             correctDayOfWeekIdx === index && isCorrect !== null
                               ? "bg-green-500 text-white focus:ring-green-500" // Always highlight the correct day in green
                               : userSelectedIdx === index
@@ -286,15 +284,17 @@ function App() {
                   </div>
                 )}
               </div>
-              {isCorrect !== null && (
-                <div
-                  className={`text-center py-4 font-bold text-lg ${
-                    isCorrect ? "text-green-500" : "text-red-500"
-                  } animate-pulse`}
-                >
-                  {isCorrect ? "CORRECT!!" : "NOT Quite!"}
-                </div>
-              )}
+              <div
+                className={`md:h-10 text-center py-4 font-bold text-lg ${
+                  isCorrect ? "text-green-500" : "text-red-500"
+                } animate-pulse`}
+              >
+                {isCorrect !== null
+                  ? !!isCorrect
+                    ? "CORRECT!!"
+                    : "NOT Quite!"
+                  : "        "}
+              </div>
             </div>
           </div>
         </>
@@ -308,7 +308,7 @@ function App() {
             <div>
               {isGameOver
                 ? `Game Over! Your score was ${score}`
-                : "Welcome to the Day of the Week Game!"}
+                : "Welcome to 'Speed Dating'!"}
             </div>
             <br />
             <div className="text-lg font-semibold text-green-600">
